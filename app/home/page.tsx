@@ -24,6 +24,7 @@ export default function HomePage() {
   async function handleCreateAt(x: number, y: number) {
     const created = await createNote({ x, y, text: "" });
     setNotes((prev) => [...prev, created]);
+    return created;
   }
 
   function handleMovePreview(noteId: string, x: number, y: number) {

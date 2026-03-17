@@ -1,17 +1,12 @@
 import type { NoteColor, NoteRecord } from "@/lib/db/schema";
 
 const NOTE_COLORS: Record<NoteColor, string> = {
-  offwhite:
-    "bg-zinc-950 text-emerald-300 border-emerald-500/45 shadow-[inset_0_0_28px_rgba(16,185,129,0.12)]",
-  gray: "bg-zinc-950 text-lime-300 border-lime-500/45 shadow-[inset_0_0_28px_rgba(132,204,22,0.12)]",
-  olive:
-    "bg-zinc-950 text-green-300 border-green-500/45 shadow-[inset_0_0_28px_rgba(34,197,94,0.12)]",
-  bluegray:
-    "bg-zinc-950 text-cyan-300 border-cyan-500/45 shadow-[inset_0_0_28px_rgba(34,211,238,0.12)]",
-  ashbrown:
-    "bg-zinc-950 text-yellow-300 border-yellow-500/45 shadow-[inset_0_0_28px_rgba(234,179,8,0.11)]",
-  graphite:
-    "bg-zinc-950 text-teal-300 border-teal-500/45 shadow-[inset_0_0_28px_rgba(45,212,191,0.12)]",
+  offwhite: "bg-amber-50 text-amber-950 border-amber-300",
+  gray: "bg-zinc-100 text-zinc-900 border-zinc-300",
+  olive: "bg-lime-100 text-lime-950 border-lime-300",
+  bluegray: "bg-sky-100 text-sky-950 border-sky-300",
+  ashbrown: "bg-rose-100 text-rose-950 border-rose-300",
+  graphite: "bg-violet-100 text-violet-950 border-violet-300",
 };
 
 type Props = {
@@ -29,12 +24,19 @@ export function NoteCard({
   onStartDrag,
   onTextCommit,
 }: Props) {
+  function htmlToPlainText(input: string) {
+    if (!input.includes("<")) return input;
+    const el = document.createElement("div");
+    el.innerHTML = input;
+    return (el.textContent ?? "").trim();
+  }
+
   return (
     <article
-      className={`matrix-note absolute w-72 rounded-2xl border p-4 shadow-[0_18px_40px_rgba(0,0,0,0.45)] transition ${
+      className={`absolute w-72 rounded-2xl border p-4 shadow-sm transition ${
         isSelected
-          ? "scale-[1.01] ring-2 ring-emerald-400/70 shadow-[0_0_0_1px_rgba(16,185,129,0.35),0_24px_46px_rgba(0,0,0,0.62)]"
-          : "hover:border-emerald-300/60"
+          ? "ring-2 ring-zinc-500/50"
+          : "hover:border-zinc-500/60"
       } ${NOTE_COLORS[note.color]}`}
       style={{
         left: note.x,
@@ -43,6 +45,8 @@ export function NoteCard({
       onPointerDown={(e) => {
         e.stopPropagation();
         onSelect();
+        const target = e.target as HTMLElement;
+        if (target.closest("[data-no-drag='true']")) return;
         onStartDrag(e.clientX, e.clientY);
       }}
     >
@@ -58,11 +62,13 @@ export function NoteCard({
       </div>
 
       <textarea
-        className={`min-h-28 w-full resize-none bg-transparent p-0 font-[family-name:var(--font-handwritten)] text-[26px] leading-8 text-current [text-shadow:0_0_10px_rgba(110,231,183,0.25)] outline-none placeholder:text-current/35 ${
+        data-no-drag="true"
+        data-note-id={note.id}
+        className={`min-h-28 w-full resize-none bg-transparent p-0 font-[family-name:var(--font-handwritten)] text-[26px] leading-8 text-current outline-none placeholder:text-current/45 ${
           note.done ? "line-through opacity-70" : ""
         }`}
-        defaultValue={note.text}
-        placeholder="write your signal..."
+        defaultValue={htmlToPlainText(note.text)}
+        placeholder="write your note..."
         onClick={(e) => {
           e.stopPropagation();
           onSelect();
