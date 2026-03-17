@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -49,9 +50,16 @@ export default function Page() {
               Scatter
             </h1>
             <p className="max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
-              Coming Soon.
+              A local-first canvas for quick notes and connected ideas.
             </p>
           </div>
+
+          <Link
+            href="/home"
+            className="rounded-full border border-foreground/20 bg-foreground px-5 py-2 text-sm font-medium text-background transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40"
+          >
+            Open board
+          </Link>
         </section>
       </div>
     </main>
