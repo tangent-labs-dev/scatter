@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Page() {
   return (
     <main className="relative min-h-svh overflow-hidden bg-background text-foreground">
@@ -28,6 +30,16 @@ export default function Page() {
 
       <div className="relative flex min-h-svh items-center justify-center px-6">
         <section className="flex max-w-3xl flex-col items-center gap-6 text-center">
+          <div className="rounded-xl border border-border/80 bg-background/70 p-2 backdrop-blur">
+            <Image
+              src="/scatter-logo.svg"
+              alt="Scatter logo"
+              width={36}
+              height={36}
+              className="[image-rendering:pixelated]"
+            />
+          </div>
+
           <div className="rounded-full border border-border/80 bg-background/70 px-3 py-1 font-mono text-[10px] tracking-[0.35em] text-muted-foreground uppercase backdrop-blur">
             local first
           </div>
