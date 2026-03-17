@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { NoteCard } from "@/components/notes/note-card";
 import type { NoteColor, NoteRecord } from "@/lib/db/schema";
 
@@ -163,7 +164,7 @@ export function CanvasView({
         `textarea[data-note-id="${noteId}"]`,
       ) as HTMLTextAreaElement | null;
       if (!textarea) return false;
-      textarea.focus();
+      textarea.focus({ preventScroll: true });
       const len = textarea.value.length;
       textarea.setSelectionRange(len, len);
       return true;
@@ -512,8 +513,14 @@ export function CanvasView({
         >
           <div className="flex items-center">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-600 bg-zinc-950 text-sm font-bold text-zinc-200">
-                ∞
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-600 bg-zinc-950 p-1">
+                <Image
+                  src="/scatter-logo.svg"
+                  alt="Scatter logo"
+                  width={20}
+                  height={20}
+                  className="[image-rendering:pixelated]"
+                />
               </div>
               <span className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-zinc-100">
                 Scatter Board
@@ -597,7 +604,7 @@ export function CanvasView({
           ))}
         </div>
 
-        <div className="pointer-events-none absolute bottom-6 left-6 z-20 flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/85 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400 backdrop-blur">
+        <div className="pointer-events-none fixed bottom-6 left-6 z-30 flex items-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900/85 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400 backdrop-blur">
           <span className="rounded-md border border-zinc-700 px-2 py-1">-</span>
           <span>{Math.round(viewport.scale * 100)}%</span>
           <span className="rounded-md border border-zinc-700 px-2 py-1">+</span>
@@ -606,7 +613,7 @@ export function CanvasView({
           </span>
         </div>
 
-        <div className="absolute bottom-6 right-6 z-20 rounded-xl border border-zinc-700 bg-zinc-900/90 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.55)] backdrop-blur">
+        <div className="fixed bottom-6 right-6 z-30 rounded-xl border border-zinc-700 bg-zinc-900/90 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.55)] backdrop-blur">
           <div className="mb-1 flex items-center justify-between px-1 font-mono text-[9px] uppercase tracking-[0.16em] text-zinc-500">
             <span>Minimap</span>
             <span>{notes.length} notes</span>
@@ -630,10 +637,15 @@ export function CanvasView({
           >
             {notes.map((note) => {
               const p = minimapData.worldToMinimap(note.x, note.y);
+              const isSelected = selectedNoteId === note.id;
               return (
                 <div
                   key={`mini-${note.id}`}
-                  className="absolute rounded-[2px] border border-zinc-400/80 bg-zinc-300/40"
+                  className={`absolute rounded-[2px] border ${
+                    isSelected
+                      ? "border-sky-300/95 bg-sky-200/65 shadow-[0_0_0_1px_rgba(186,230,253,0.4)]"
+                      : "border-zinc-400/80 bg-zinc-300/40"
+                  }`}
                   style={{
                     left: p.x,
                     top: p.y,

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { NoteColor, NoteRecord } from "@/lib/db/schema";
 
 const NOTE_COLORS: Record<NoteColor, string> = {
@@ -7,6 +8,42 @@ const NOTE_COLORS: Record<NoteColor, string> = {
   bluegray: "bg-sky-100 text-sky-950 border-sky-300",
   ashbrown: "bg-rose-100 text-rose-950 border-rose-300",
   graphite: "bg-violet-100 text-violet-950 border-violet-300",
+};
+
+const NOTE_SELECTED_SHADE: Record<
+  NoteColor,
+  { borderColor: string; ringColor: string; shadowColor: string }
+> = {
+  offwhite: {
+    borderColor: "#b45309",
+    ringColor: "rgba(217, 119, 6, 0.35)",
+    shadowColor: "rgba(217, 119, 6, 0.22)",
+  },
+  gray: {
+    borderColor: "#52525b",
+    ringColor: "rgba(113, 113, 122, 0.34)",
+    shadowColor: "rgba(63, 63, 70, 0.2)",
+  },
+  olive: {
+    borderColor: "#4d7c0f",
+    ringColor: "rgba(101, 163, 13, 0.32)",
+    shadowColor: "rgba(101, 163, 13, 0.2)",
+  },
+  bluegray: {
+    borderColor: "#0369a1",
+    ringColor: "rgba(14, 165, 233, 0.32)",
+    shadowColor: "rgba(14, 165, 233, 0.2)",
+  },
+  ashbrown: {
+    borderColor: "#be123c",
+    ringColor: "rgba(244, 63, 94, 0.32)",
+    shadowColor: "rgba(244, 63, 94, 0.2)",
+  },
+  graphite: {
+    borderColor: "#7c3aed",
+    ringColor: "rgba(139, 92, 246, 0.34)",
+    shadowColor: "rgba(139, 92, 246, 0.22)",
+  },
 };
 
 type Props = {
@@ -31,16 +68,25 @@ export function NoteCard({
     return (el.textContent ?? "").trim();
   }
 
+  const shade = NOTE_SELECTED_SHADE[note.color];
+  const selectedStyle = isSelected
+    ? ({
+        borderColor: shade.borderColor,
+        boxShadow: `0 0 0 2px ${shade.ringColor}, 0 12px 22px ${shade.shadowColor}`,
+      } as CSSProperties)
+    : undefined;
+
   return (
     <article
-      className={`absolute w-72 rounded-2xl border p-4 shadow-sm transition ${
+      className={`absolute relative w-72 rounded-2xl border p-4 shadow-sm transition ${
         isSelected
-          ? "ring-2 ring-zinc-500/50"
+          ? "z-10"
           : "hover:border-zinc-500/60"
       } ${NOTE_COLORS[note.color]}`}
       style={{
         left: note.x,
         top: note.y,
+        ...selectedStyle,
       }}
       onPointerDown={(e) => {
         e.stopPropagation();
@@ -52,7 +98,7 @@ export function NoteCard({
     >
       <div className="mb-3 flex items-center justify-between gap-2 border-b border-current/25 pb-2">
         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em] text-current/70">
-          {note.done ? "Done" : isSelected ? "Editing" : "Draft"}
+          {note.done ? "Done" : isSelected ? "Selected" : "Draft"}
         </span>
         {note.done && (
           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-current/70">
